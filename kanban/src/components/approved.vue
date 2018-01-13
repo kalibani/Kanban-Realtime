@@ -4,12 +4,12 @@
       <div class="card-header">
         Approved
       </div>
-      <br>
-      <div class="card-block">
-        <h4 class="card-title">title</h4>
-        <h4 class="card-title">point</h4>
-        <p class="card-text">desc</p>
-          <button type="button" class="btn-sm btn-danger">Remove</button>
+      <div class="card-block" v-for="task in kanban">
+        <br>
+        <h4 class="card-title">{{task.title}}</h4>
+        <h4 class="card-title">{{task.point}}</h4>
+        <p class="card-text">{{task.desc}}</p>
+          <button type="button" class="btn-sm btn-danger" @click="remove(task)">Remove</button>
       </div>
       <br>
     </div>
@@ -18,8 +18,14 @@
 </template>
 
 <script>
+import db from '../../firebase'
 export default {
-  props:['kanban']
+  props:['kanban'],
+  methods:{
+    remove(task){
+      db.ref('/approved').child(task['.key']).remove()
+    }
+  }
 }
 </script>
 

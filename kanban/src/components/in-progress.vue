@@ -9,9 +9,9 @@
         <h4 class="card-title">{{task.title}}</h4>
         <h4 class="card-title">{{task.point}}</h4>
         <p class="card-text">{{task.desc}}</p>
-          <button type="button" class="btn-sm btn-warning" @click="remove(task)">Back</button>
+          <button type="button" class="btn-sm btn-warning" @click="back(task)">Back</button>
           <button type="button" class="btn-sm btn-danger" @click="remove(task)">Remove</button>
-          <button type="button" class="btn-sm btn-success" @click="remove(task)">Next</button>
+          <button type="button" class="btn-sm btn-success" @click="next(task)">Next</button>
       </div>
       <br>
     </div>
@@ -26,6 +26,24 @@ export default {
   methods: {
     remove(task){
       db.ref('/in-progress').child(task['.key']).remove()
+    },
+    next(task){
+      const newTask = {
+        title: task.title,
+        point: task.point,
+        desc: task.desc
+      }
+      db.ref('/needs-review').push(newTask)
+      this.remove(task)
+    },
+    back(task){
+      const newTask = {
+        title: task.title,
+        point: task.point,
+        desc: task.desc
+      }
+      db.ref('/on-hold').push(newTask)
+      this.remove(task)
     }
   }
 }

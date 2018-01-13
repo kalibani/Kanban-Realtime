@@ -9,23 +9,11 @@
         <h4 class="card-title">{{task.title}}</h4>
         <h4 class="card-title">{{task.point}}</h4>
         <p class="card-text">{{task.desc}}</p>
-          <button type="button" class="btn-sm btn-primary" v-b-modal.modalPrevent2 @click="getTask(task)">Edit</button>
           <button type="button" class="btn-sm btn-danger" @click="remove(task)">Remove</button>
-          <button type="button" class="btn-sm btn-success" @click="remove(task)">Next</button>
+          <button type="button" class="btn-sm btn-success" @click="next(task)">Next</button>
       </div>
       <br>
     </div>
-
-    <b-modal id="modalPrevent2" ref="modal" title="Edit Task!" @ok="handleOk" @shown="clearTask">
-      <form @submit.stop.prevent="editTask">
-        <b-form-input type="text" placeholder="title"v-model="tasks.title"></b-form-input>
-        <br>
-        <b-form-input type="text" placeholder="desc"v-model="tasks.desc"></b-form-input>
-        <br>
-        <b-form-input type="text" placeholder="point"v-model="tasks.point"></b-form-input>
-        <br>
-      </form>
-    </b-modal>
   </div>
 
 </template>
@@ -45,36 +33,17 @@ export default {
     }
   },
   methods: {
-    clearTask () {
-      this.tasks = {}
-    },
-    getTask(task){
-      this.tasks.title = task.title
-      this.tasks.point = task.desc
-      this.tasks.desc = task.point
-      this.tasks.key = task['.key']
-    },
-    handleOk (evt) {
-      // Prevent modal from closing
-      evt.preventDefault()
-      if (!this.tasks) {
-        alert('Please enter task')
-      } else {
-        this.editTask()
-      }
-    },
     remove(task){
       db.ref('/on-hold').child(task['.key']).remove()
     },
-    editTask(){
+    next(task){
       const newTask = {
-        title: this.tasks.title,
-        point: this.tasks.point,
-        desc: this.tasks.desc
+        title: task.title,
+        point: task.point,
+        desc: task.desc
       }
-      db.ref(`/on-hold/${this.tasks.key}`).set(newTask)
-      this.clearTask()
-      this.$refs.modal.hide()
+      db.ref('/in-progress').push(newTask)
+      this.remove(task)
     }
   }
 }
