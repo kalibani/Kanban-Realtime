@@ -1,6 +1,6 @@
 # kanban
 
-> A Vue.js project
+> A Vue.js project || Access on:  https://vuejs-firebase-01-3b3e7.firebaseapp.com
 
 ## Build Setup
 
