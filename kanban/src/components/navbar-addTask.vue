@@ -11,14 +11,11 @@
   </b-collapse>
 </b-navbar>
     <div class="mt-3 mb-3">
-      Submitted Names:
-      <ul>
-        <li v-for="n in names">{{n}}</li>
-      </ul>
+      <br>
     </div>
     <!-- Modal Component -->
-    <b-modal id="modalPrevent" ref="modal" title="Add Task!" @ok="handleOk" @shown="clearName">
-      <form @submit.stop.prevent="handleSubmit">
+    <b-modal id="modalPrevent" ref="modal" title="Add Task!" @ok="handleOk" @shown="clearTask">
+      <form @submit.stop.prevent="addTask">
         <b-form-input type="text" placeholder="title"v-model="task.title"></b-form-input>
         <br>
         <b-form-input type="text" placeholder="desc"v-model="task.desc"></b-form-input>
@@ -34,6 +31,7 @@
 </template>
 
 <script>
+import db from '../../firebase'
 export default {
   data () {
     return {
@@ -43,7 +41,6 @@ export default {
         point: '',
         assignedTo: ''
       },
-      names: [],
       options: [
         { value: 'on-hold', text: 'On Hold' },
         { value: 'in-progress', text: 'In Progress' }
@@ -51,21 +48,33 @@ export default {
     }
   },
   methods: {
-    clearName () {
-      this.name = ''
+    clearTask () {
+      this.task = {}
     },
     handleOk (evt) {
       // Prevent modal from closing
       evt.preventDefault()
-      if (!this.name) {
-        alert('Please enter your name')
+      if (!this.task) {
+        alert('Please enter new task')
       } else {
-        this.handleSubmit()
+        this.addTask()
       }
     },
-    handleSubmit () {
-      this.names.push(this.name)
-      this.clearName()
+    addTask () {
+      const newTask = {
+        title: this.task.title,
+        desc: this.task.desc,
+        point: this.task.point,
+        assignedTo: this.task.assignedTo
+      }
+      if (this.task.assignedTo == 'on-hold') {
+        db.ref('/on-hold').push(newTask)
+
+      }else {
+        db.ref('/in-progress').push(newTask)
+
+      }
+      this.clearTask()
       this.$refs.modal.hide()
     }
   }
@@ -73,5 +82,8 @@ export default {
 
 </script>
 
-<style lang="css">
+<style scoped="" lang="css">
+h1 {
+  font-weight: normal;
+}
 </style>
